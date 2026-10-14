@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>초등 2학년 한글 바르게 쓰기</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ===== 글꼴: KERIS 학교안심 글꼴 (무료) ===== */
+    /* 바른돋움: 화면 글자(제목, 버튼 등) / 바른바탕: 따라 쓰기용 교과서풍 글자 */
+    @font-face {
+      font-family: "SchoolSafeDotum";
+      src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareondotumR.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "SchoolSafeDotum";
+      src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareondotumB.woff2") format("woff2");
+      font-weight: 700;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "SchoolSafeBatang";
+      src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareonbatangR.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "SchoolSafeBatang";
+      src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareonbatangB.woff2") format("woff2");
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    :root {
+      --ink: #24354b;
+      --paper: #fffdf7;
+      --navy: #25476a;
+      --coral: #f17162;
+      --mint: #d9eee8;
+      --guide: #bdd0d8;
+      --guide-dark: #91abb9;
+      --pale-glyph: #d9dfe1;
+      --arrow: #4387c5;
+      --cell-size: 88px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      width: 100%;
+      margin: 0;
+      color: var(--ink);
+      font-family: "SchoolSafeDotum", "Malgun Gothic", sans-serif;
+      background-color: #edf5f4;
+      background-image: radial-gradient(#d0e5e0 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    button, input { font: inherit; }
+
+    button:focus-visible, input:focus-visible {
+      outline: 3px solid #76a9cc;
+      outline-offset: 3px;
+    }
+
+    .paper-sheet {
+      position: relative; /* 배경 줄무늬가 종이 안에만 그려지도록 */
+      width: 100%;
+      max-width: 1100px;
+      min-height: 100vh;
+      margin: 0 auto;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 18px 60px rgba(39, 70, 94, .14);
+    }
+
+    .paper-sheet::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .35;
+      background-image: linear-gradient(to bottom, transparent 31px, #edf0e9 32px);
+      background-size: 100% 32px;
+    }
+
+    .sheet-content { position: relative; z-index: 1; }
+
+    .pencil-mark {
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      border-radius: 2px;
+      background: var(--coral);
+      transform: rotate(45deg);
+    }
+
+    /* ===== 패널, 버튼 (예전 canva-* 스타일 대신) ===== */
+    .eyebrow { color: var(--coral); font-size: .8rem; }
+    .page-title { color: var(--ink); font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 400; }
+    .page-subtitle { color: #5a6b7c; }
+
+    .name-field { background: #f3f6f5; }
+    .name-field .label { color: #5a6b7c; font-size: .9rem; }
+
+    .teacher-panel { background: var(--mint); }
+    .teacher-panel h2 { color: var(--navy); font-size: 1.3rem; }
+    .teacher-panel .help { color: #5a6b7c; font-size: .9rem; }
+    .teacher-panel label { color: var(--ink); font-size: .9rem; }
+
+    .btn-primary { color: #fff; background: var(--navy); }
+    .btn-generate { color: #fff; background: var(--coral); }
+    .btn-example {
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #c9d9df;
+      font-size: .85rem;
+    }
+    .btn-example.active { background: #fde3df; border-color: #f4b3aa; }
+
+    .lesson-card {
+      border: 2px solid #d9e4e8;
+      border-radius: 22px;
+      background: rgba(255,255,255,.84);
+    }
+    .lesson-card h2 { color: var(--ink); font-size: 1.25rem; }
+    .lesson-card .help { color: #5a6b7c; font-size: .88rem; }
+
+    .step-label {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--navy);
+      font-size: .85rem;
+      font-weight: 700;
+    }
+
+    /* ===== 원고지 칸 ===== */
+    .writing-grid {
+      width: max-content;
+      max-width: calc(100% - 56px);
+      margin-left: 56px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      border: 2px solid var(--guide-dark);
+      background: #fff;
+      scrollbar-color: #9fb7c3 transparent;
+      scrollbar-width: thin;
+    }
+
+    .writing-row {
+      display: flex;
+      width: max-content;
+    }
+
+    .hangul-cell, .space-cell {
+      position: relative;
+      width: var(--cell-size);
+      height: var(--cell-size);
+      flex: 0 0 var(--cell-size);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-right: 1px solid var(--guide);
+      border-bottom: 1px solid var(--guide);
+      background-color: rgba(255,255,255,.88);
+    }
+
+    .hangul-cell:last-child, .space-cell:last-child { border-right: 0; }
+    .writing-row:last-child .hangul-cell, .writing-row:last-child .space-cell { border-bottom: 0; }
+
+    /* 칸 안의 십자 점선 */
+    .hangul-cell::before, .hangul-cell::after,
+    .space-cell::before, .space-cell::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .hangul-cell::before, .space-cell::before {
+      left: 0; top: 50%; width: 100%;
+      border-top: 1px dashed var(--guide);
+    }
+    .hangul-cell::after, .space-cell::after {
+      left: 50%; top: 0; height: 100%;
+      border-left: 1px dashed var(--guide);
+    }
+
+    .worksheet-glyph {
+      position: relative;
+      z-index: 1;
+      color: var(--pale-glyph);
+      font-family: "SchoolSafeBatang", "Batang", serif;
+      font-size: calc(var(--cell-size) * .72);
+      font-weight: 400;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .practice-cell.blank .worksheet-glyph { color: transparent; }
+
+    .punctuation {
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 0 0 8px 9px;
+    }
+    .punctuation .worksheet-glyph { color: #aebcc2; font-size: calc(var(--cell-size) * .45); }
+    .practice-cell.blank.punctuation .worksheet-glyph { color: transparent; }
+
+    /* 획순 그림 (SVG) */
+    .stroke-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .stroke-svg .glyph-stroke {
+      fill: none;
+      stroke: #d0d9df;
+      stroke-width: 5.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .stroke-svg .arrow-line {
+      fill: none;
+      stroke: var(--arrow);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .stroke-svg .arrow-head { fill: var(--arrow); }
+    .stroke-svg .num-circle {
+      fill: #ffffff;
+      stroke: #3f7fae;
+      stroke-width: 1.2;
+    }
+    .stroke-svg .num-text {
+      fill: #1d4e73;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    /* 빈 줄 쓰기 */
+    .line-practice {
+      display: flex;
+      align-items: end;
+      gap: 12px;
+      margin-left: -56px;
+      padding-top: 16px;
+    }
+    .line-number {
+      width: 44px;
+      padding-bottom: 8px;
+      color: #718090;
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+    }
+    .practice-line {
+      height: 68px;
+      flex: 1;
+      border: 2px solid var(--guide-dark);
+      background-color: rgba(255,255,255,.5);
+      background-image: linear-gradient(to bottom, transparent 32px, #c9d9df 33px, transparent 34px);
+    }
+
+    .status-message { min-height: 24px; }
+
+    @media (max-width: 640px) {
+      :root { --cell-size: 62px; }
+      .writing-grid { max-width: calc(100% - 26px); margin-left: 26px; }
+      .line-practice { margin-left: -26px; }
+      .line-number { width: 20px; font-size: 1.8rem; }
+    }
+
+    /* ===== 인쇄 (A4 1장 최적화) ===== */
+    @page { size: A4 portrait; margin: 10mm 12mm; }
+
+    @media print {
+      :root { --cell-size: 62px; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body { background: #fff; }
+      .paper-sheet { max-width: none; min-height: auto; box-shadow: none; }
+      .paper-sheet::before { display: none; }
+      .sheet-content { padding: 0 !important; }
+      .no-print { display: none !important; }
+      .lesson-card { break-inside: avoid; padding: 10px 14px !important; border-radius: 14px !important; }
+      .lesson-card h2 { font-size: 1.1rem !important; }
+      .lesson-card .help { margin-bottom: 8px !important; font-size: 0.8rem !important; }
+      main { margin-top: 10px !important; }
+      main > * + * { margin-top: 10px !important; }
+      .writing-grid { margin-left: 0; max-width: none; overflow: visible; border-width: 1.5px; }
+      .line-practice { margin-left: -36px; padding-top: 6px; }
+      .line-number { font-size: 1.8rem; width: 32px; padding-bottom: 4px; }
+      .practice-line { height: 48px; background-image: linear-gradient(to bottom, transparent 23px, #c9d9df 24px, transparent 25px); }
+    }
+  </style>
+</head>
+<body class="w-full min-h-screen">
+  <div class="paper-sheet">
+    <div class="sheet-content px-4 py-6 sm:px-8 sm:py-9 lg:px-12">
+
+      <!-- 머리말 -->
+      <header class="border-b-2 border-dashed border-[#cbdde1] pb-6">
+        <div class="flex items-center gap-3">
+          <span class="pencil-mark" aria-hidden="true"></span>
+          <p class="eyebrow m-0 font-bold tracking-[0.08em]">[국어] 한글 쓰기 연습</p>
+        </div>
+        <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 class="page-title m-0 tracking-tight">한글 바르게 쓰기</h1>
+            <p class="page-subtitle mt-2 mb-0 max-w-2xl leading-relaxed">연한 글자와 동그라미 번호, 파란 화살표를 보며 바른 획순으로 천천히 써 보세요.</p>
+          </div>
+          <div class="name-field flex shrink-0 items-end gap-2 rounded-full px-4 py-2">
+            <span class="label">이름</span>
+            <span class="inline-block w-24 border-b border-[#7893a2]"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 선생님 설정 (인쇄 안 됨) -->
+      <section class="teacher-panel no-print mt-7 rounded-[22px] p-5 sm:p-6">
+        <div class="flex items-start gap-3">
+          <i data-lucide="pen-line" class="mt-1 h-5 w-5 shrink-0 text-[#f17162]" aria-hidden="true"></i>
+          <div class="w-full">
+            <h2 class="m-0 font-bold">문장 만들기</h2>
+            <p class="help mt-1 mb-4 leading-relaxed">오늘 연습할 단어 또는 문장을 입력하면 학습지를 만들어 줘요.</p>
+            <form id="sentence-form" class="flex flex-col gap-3 sm:flex-row">
+              <div class="flex-1">
+                <label class="mb-1 block font-bold" for="sentence-input">연습할 단어 또는 문장</label>
+                <input id="sentence-input" class="w-full rounded-xl border-2 border-[#b9cbd3] bg-white px-4 py-3 outline-none transition focus:border-[#25476a] focus:ring-4 focus:ring-[#ffffff]" type="text" maxlength="42" autocomplete="off" placeholder="예: 바른 글씨를 써요.">
+              </div>
+              <button class="btn-generate mt-auto inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-bold transition hover:brightness-95" type="submit">
+                <i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i>
+                <span>학습지 만들기</span>
+              </button>
+            </form>
+            <div class="mt-4 space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="rounded bg-[#c8e2dc] px-2 py-0.5 text-xs font-bold text-[#214f46]">기초</span>
+                <button data-example="바른 글씨를 써요." class="btn-example rounded-full px-3 py-1 transition hover:brightness-95" type="button">바른 글씨를 써요.</button>
+                <button data-example="나비가 날아가요." class="btn-example rounded-full px-3 py-1 transition hover:brightness-95" type="button">나비가 날아가요.</button>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="rounded bg-[#c8e2dc] px-2 py-0.5 text-xs font-bold text-[#214f46]">받침</span>
+                <button data-example="봄바람이 불어요." class="btn-example rounded-full px-3 py-1 transition hover:brightness-95" type="button">봄바람이 불어요.</button>
+                <button data-example="친구와 함께 놀아요." class="btn-example rounded-full px-3 py-1 transition hover:brightness-95" type="button">친구와 함께 놀아요.</button>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="rounded bg-[#c8e2dc] px-2 py-0.5 text-xs font-bold text-[#214f46]">2학년 핵심</span>
+                <button data-example="학교에 가요." class="btn-example rounded-full px-3 py-1 transition hover:brightness-95" type="button">학교에 가요.</button>
+                <button data-example="책을 많이 읽어요." class="btn-example rounded-full px-3 py-1 transition hover:brightness-95" type="button">책을 많이 읽어요.</button>
+                <button data-example="밝은 달이 떴어요." class="btn-example rounded-full px-3 py-1 transition hover:brightness-95" type="button">밝은 달이 떴어요.</button>
+              </div>
+            </div>
+            <p id="status-message" class="status-message mt-3 mb-0 font-bold" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 학습지 본문 -->
+      <main class="mt-8 space-y-6" aria-label="한글 쓰기 활동지">
+        <section class="lesson-card p-5 sm:p-6">
+          <div class="flex items-start gap-3">
+            <span class="step-label" aria-hidden="true">1</span>
+            <div>
+              <h2 class="m-0 font-bold">한글 획순 알아보기</h2>
+              <p class="help mt-1 mb-5 leading-relaxed">연한 회색 글자 위의 동그라미 번호와 파란 화살표를 보고 순서대로 써 보아요.</p>
+            </div>
+          </div>
+          <div id="stroke-grid" class="writing-grid" aria-label="글자별 획순 안내"></div>
+        </section>
+
+        <section class="lesson-card p-5 sm:p-6">
+          <div class="flex items-start gap-3">
+            <span class="step-label" aria-hidden="true">2</span>
+            <div>
+              <h2 class="m-0 font-bold">따라 쓰기</h2>
+              <p class="help mt-1 mb-5 leading-relaxed">연한 글자 위에 획순을 생각하며 따라 써 보아요.</p>
+            </div>
+          </div>
+          <div id="trace-grid" class="writing-grid" aria-label="따라 쓰기 칸"></div>
+        </section>
+
+        <section class="lesson-card p-5 sm:p-6">
+          <div class="flex items-start gap-3">
+            <span class="step-label" aria-hidden="true">3</span>
+            <div>
+              <h2 class="m-0 font-bold">스스로 쓰기</h2>
+              <p class="help mt-1 mb-5 leading-relaxed">십자 점선에 맞춰 글자의 크기와 자리를 생각하며 써 보아요.</p>
+            </div>
+          </div>
+          <div id="self-grid" class="writing-grid" aria-label="스스로 쓰기 칸"></div>
+        </section>
+
+        <section class="lesson-card p-5 sm:p-6">
+          <div class="flex items-start gap-3">
+            <span class="step-label" aria-hidden="true">4</span>
+            <div class="w-full">
+              <h2 class="m-0 font-bold">공책에 스스로 쓰기</h2>
+              <p class="help mt-1 mb-2 leading-relaxed">띄어쓰기와 문장 부호를 확인하며 다시 써 보아요.</p>
+              <div id="line-practice" aria-label="빈 줄 쓰기 연습"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="no-print mt-7 flex flex-col gap-3 border-t-2 border-dashed border-[#cbdde1] pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <p class="help m-0 leading-relaxed text-sm text-[#5a6b7c]">Tip. 글자를 크게 쓰기보다 칸의 가운데에 맞춰 바른 획순으로 또박또박 써요. 인쇄할 때는 ‘배경 그래픽’을 켜 주세요.</p>
+        <button id="print-button" class="btn-primary inline-flex items-center justify-center gap-2 self-start rounded-xl px-4 py-2.5 font-bold transition hover:brightness-110" type="button">
+          <i data-lucide="printer" class="h-4 w-4" aria-hidden="true"></i>
+          <span>학습지 인쇄하기</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       1. 한글 글자 나누기 (초성 · 중성 · 종성)
+       ========================================================= */
+    const choseong = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+    const jungseong = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"];
+    const jongseong = ["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+
+    // 모음 모양 분류: 세로 모음(오른쪽), 가로 모음(아래), 섞인 모음(가로+세로)
+    const verticalVowels = new Set(["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅣ"]);
+    const horizontalVowels = new Set(["ㅗ","ㅛ","ㅜ","ㅠ","ㅡ"]);
+    const mixedVowels = {
+      "ㅘ": ["ㅗ","ㅏ"], "ㅙ": ["ㅗ","ㅐ"], "ㅚ": ["ㅗ","ㅣ"],
+      "ㅝ": ["ㅜ","ㅓ"], "ㅞ": ["ㅜ","ㅔ"], "ㅟ": ["ㅜ","ㅣ"], "ㅢ": ["ㅡ","ㅣ"]
+    };
+
+    const punctuationMarks = [".", "。", ",", "、", "!", "！", "?", "？"];
+
+    function isHangul(char) {
+      const code = char.charCodeAt(0);
+      return code >= 0xAC00 && code <= 0xD7A3;
+    }
+
+    function decompose(char) {
+      const offset = char.charCodeAt(0) - 0xAC00;
+      return {
+        initial: choseong[Math.floor(offset / 588)],
+        vowel: jungseong[Math.floor((offset % 588) / 28)],
+        final: jongseong[offset % 28]
+      };
+    }
+
+    /* =========================================================
+       2. 자모별 "획 지도"
+       - 각 자모를 0~100 크기의 네모 안에 그린다고 생각하고,
+         획마다 [시작점, (꺾이는 점), 끝점]을 순서대로 적습니다.
+       - 점의 순서 = 쓰는 방향 (화살표 방향)
+       - { circle: [중심x, 중심y, 반지름] } 은 ㅇ처럼 동그라미 획
+         (맨 위에서 시작해 왼쪽으로 돌아가는 방향)
+       ========================================================= */
+    const STROKES = {
+      // 자음 (교과서 획수 기준)
+      "ㄱ": [ [[18,20],[82,20],[82,86]] ],                                   // 1획
+      "ㄴ": [ [[20,16],[20,84],[86,84]] ],                                   // 1획
+      "ㄷ": [ [[20,18],[82,18]], [[20,26],[20,84],[86,84]] ],                // 2획 (1획과 2획 시작점 분리)
+      "ㄹ": [ [[16,14],[82,14],[82,46]], [[18,50],[80,50]], [[18,56],[18,86],[86,86]] ], // 3획 (2획·3획 시작점 분리)
+      "ㅁ": [ [[20,16],[20,84]], [[26,16],[82,16],[82,84]], [[20,84],[82,84]] ],          // 3획 (1획·2획 시작점 분리)
+      "ㅂ": [ [[22,12],[22,86]], [[78,12],[78,86]], [[22,48],[78,48]], [[22,86],[78,86]] ], // 4획
+      "ㅅ": [ [[50,12],[16,86]], [[46,46],[84,86]] ],                        // 2획
+      "ㅇ": [ { circle: [50,50,35] } ],                                     // 1획
+      "ㅈ": [ [[18,18],[82,18],[22,86]], [[48,50],[84,86]] ],                // 2획
+      "ㅊ": [ [[50,4],[50,18]], [[18,28],[82,28],[22,90]], [[48,58],[84,90]] ], // 3획
+      "ㅋ": [ [[18,16],[82,16],[82,86]], [[20,50],[80,50]] ],                // 2획
+      "ㅌ": [ [[20,14],[82,14]], [[20,49],[78,49]], [[20,22],[20,86],[84,86]] ], // 3획 (1획·3획 시작점 분리)
+      "ㅍ": [ [[14,14],[86,14]], [[34,16],[34,84]], [[66,16],[66,84]], [[14,86],[86,86]] ], // 4획
+      "ㅎ": [ [[50,4],[50,18]], [[16,28],[84,28]], { circle: [50,64,24] } ], // 3획
+
+      // 세로 모음
+      "ㅏ": [ [[40,4],[40,96]], [[40,48],[86,48]] ],
+      "ㅑ": [ [[40,4],[40,96]], [[40,35],[86,35]], [[40,62],[86,62]] ],
+      "ㅓ": [ [[14,48],[60,48]], [[60,4],[60,96]] ],
+      "ㅕ": [ [[14,35],[60,35]], [[14,62],[60,62]], [[60,4],[60,96]] ],
+      "ㅣ": [ [[50,4],[50,96]] ],
+      "ㅐ": [ [[24,6],[24,94]], [[24,48],[72,48]], [[74,4],[74,96]] ],
+      "ㅒ": [ [[24,6],[24,94]], [[24,35],[72,35]], [[24,62],[72,62]], [[74,4],[74,96]] ],
+      "ㅔ": [ [[6,48],[44,48]], [[44,6],[44,94]], [[80,4],[80,96]] ],
+      "ㅖ": [ [[6,35],[44,35]], [[6,62],[44,62]], [[44,6],[44,94]], [[80,4],[80,96]] ],
+
+      // 가로 모음
+      "ㅗ": [ [[50,10],[50,56]], [[6,62],[94,62]] ],
+      "ㅛ": [ [[34,10],[34,56]], [[66,10],[66,56]], [[6,62],[94,62]] ],
+      "ㅜ": [ [[6,34],[94,34]], [[50,40],[50,90]] ],
+      "ㅠ": [ [[6,34],[94,34]], [[34,40],[34,90]], [[66,40],[66,90]] ],
+      "ㅡ": [ [[6,50],[94,50]] ]
+    };
+
+    // 쌍자음 · 겹받침: 두 자모를 좌우로 나란히 붙여서 만듭니다.
+    const COMPOUND = {
+      "ㄲ": ["ㄱ","ㄱ"], "ㄸ": ["ㄷ","ㄷ"], "ㅃ": ["ㅂ","ㅂ"], "ㅆ": ["ㅅ","ㅅ"], "ㅉ": ["ㅈ","ㅈ"],
+      "ㄳ": ["ㄱ","ㅅ"], "ㄵ": ["ㄴ","ㅈ"], "ㄶ": ["ㄴ","ㅎ"], "ㄺ": ["ㄹ","ㄱ"], "ㄻ": ["ㄹ","ㅁ"],
+      "ㄼ": ["ㄹ","ㅂ"], "ㄽ": ["ㄹ","ㅅ"], "ㄾ": ["ㄹ","ㅌ"], "ㄿ": ["ㄹ","ㅍ"], "ㅀ": ["ㄹ","ㅎ"],
+      "ㅄ": ["ㅂ","ㅅ"]
+    };
+
+    /* =========================================================
+       3. 한 글자 안에서 자모가 들어갈 자리 (칸 크기 0~100 기준)
+          [x, y, 너비, 높이]
+       ========================================================= */
+    const LAYOUTS = {
+      vertical:       { initial: [12,14,44,68], vowel: [58,8,30,84] },
+      verticalFinal:  { initial: [14,6,40,44],  vowel: [58,4,28,56], final: [18,60,64,36] },
+      horizontal:     { initial: [24,8,52,42],  vowel: [10,50,80,42] },
+      horizontalFinal:{ initial: [26,4,48,32],  vowel: [12,34,76,26], final: [18,60,64,36] },
+      mixed:          { initial: [10,8,44,40],  vowelH: [4,48,62,42], vowelV: [66,4,26,92] },
+      mixedFinal:     { initial: [12,4,40,30],  vowelH: [6,34,58,27], vowelV: [66,2,24,60], final: [18,61,64,35] }
+    };
+
+    // 자모 하나를 주어진 네모(box)에 맞게 옮긴 획 목록을 돌려줍니다.
+    function jamoStrokes(jamo, box) {
+      if (COMPOUND[jamo]) {
+        const [left, right] = COMPOUND[jamo];
+        const [x, y, w, h] = box;
+        const gap = w * 0.04;
+        const half = (w - gap) * 0.49;
+        return [
+          ...jamoStrokes(left,  [x, y, half, h]),
+          ...jamoStrokes(right, [x + w - half, y, half, h])
+        ];
+      }
+
+      const data = STROKES[jamo];
+      if (!data) return [];
+      const [bx, by, bw, bh] = box;
+      const map = ([px, py]) => [bx + px / 100 * bw, by + py / 100 * bh];
+
+      return data.map(stroke => {
+        if (stroke.circle) {
+          const [cx, cy, r] = stroke.circle;
+          const [mx, my] = map([cx, cy]);
+          return { circle: true, cx: mx, cy: my, r: r / 100 * Math.min(bw, bh) };
+        }
+        return { points: stroke.map(map) };
+      });
+    }
+
+    // 글자 하나 → 쓰는 순서대로 모든 획
+    function syllableStrokes(char) {
+      const parts = decompose(char);
+      const hasFinal = Boolean(parts.final);
+      let strokes = [];
+
+      if (mixedVowels[parts.vowel]) {
+        const layout = hasFinal ? LAYOUTS.mixedFinal : LAYOUTS.mixed;
+        const [hPart, vPart] = mixedVowels[parts.vowel];
+        strokes = [
+          ...jamoStrokes(parts.initial, layout.initial),
+          ...jamoStrokes(hPart, layout.vowelH),
+          ...jamoStrokes(vPart, layout.vowelV)
+        ];
+        if (hasFinal) strokes.push(...jamoStrokes(parts.final, layout.final));
+      } else {
+        const isVertical = verticalVowels.has(parts.vowel);
+        const key = (isVertical ? "vertical" : "horizontal") + (hasFinal ? "Final" : "");
+        const layout = LAYOUTS[key];
+        strokes = [
+          ...jamoStrokes(parts.initial, layout.initial),
+          ...jamoStrokes(parts.vowel, layout.vowel)
+        ];
+        if (hasFinal) strokes.push(...jamoStrokes(parts.final, layout.final));
+      }
+      return strokes;
+    }
+
+    // 자모 하나만 입력된 경우 (예: ㄱ, ㅏ)
+    function singleJamoStrokes(char) {
+      if (!STROKES[char] && !COMPOUND[char]) return null;
+      return jamoStrokes(char, [18, 14, 64, 72]);
+    }
+
+    /* =========================================================
+       4. 획순 그림(SVG) 그리기
+       ========================================================= */
+    const SVG_NS = "http://www.w3.org/2000/svg";
+
+    function svgEl(tag, attrs) {
+      const el = document.createElementNS(SVG_NS, tag);
+      Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+      return el;
+    }
+
+    // 동그라미 획을 점 목록으로 바꾸기 (맨 위에서 시작해 왼쪽으로 돌기)
+    function circlePoints(s, portion) {
+      const pts = [];
+      const steps = 36;
+      for (let i = 0; i <= steps; i += 1) {
+        const t = (i / steps) * Math.PI * 2 * portion;
+        pts.push([s.cx - s.r * Math.sin(t), s.cy - s.r * Math.cos(t)]);
+      }
+      return pts;
+    }
+
+    function toPath(points) {
+      return points.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" ");
+    }
+
+    // 끝을 조금 줄인 선 (화살촉이 끝에 딱 맞도록)
+    function shortenEnd(points, amount) {
+      const pts = points.map(p => [...p]);
+      const a = pts[pts.length - 2];
+      const b = pts[pts.length - 1];
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (len > amount + 1) {
+        b[0] -= (b[0] - a[0]) / len * amount;
+        b[1] -= (b[1] - a[1]) / len * amount;
+      }
+      return pts;
+    }
+
+    function arrowHead(points, size) {
+      const a = points[points.length - 2];
+      const b = points[points.length - 1];
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+      const ux = (b[0] - a[0]) / len;
+      const uy = (b[1] - a[1]) / len;
+      const baseX = b[0] - ux * size;
+      const baseY = b[1] - uy * size;
+      const half = size * 0.55;
+      return `${b[0].toFixed(2)},${b[1].toFixed(2)} ${(baseX - uy * half).toFixed(2)},${(baseY + ux * half).toFixed(2)} ${(baseX + uy * half).toFixed(2)},${(baseY - ux * half).toFixed(2)}`;
+    }
+
+    // 번호 동그라미 자리 고르기: 겹침을 방지하고 시작점 근처의 최적 위치 선정
+    function chooseNumberPosition(stroke, points, placed, radius) {
+      const minGap = radius * 2 + 1.2;
+      const margin = radius + 1.5;
+      const inside = ([x, y]) => x >= margin && x <= 100 - margin && y >= margin && y <= 100 - margin;
+      const clamp = ([x, y]) => [
+        Math.min(100 - margin, Math.max(margin, x)),
+        Math.min(100 - margin, Math.max(margin, y))
+      ];
+      const getDist = p => {
+        if (!placed.length) return 999;
+        return Math.min(...placed.map(q => Math.hypot(p[0] - q[0], p[1] - q[1])));
+      };
+
+      const candidates = [];
+
+      if (stroke.circle) {
+        // 원형 'ㅇ'은 11시~12시 방향 바깥쪽 또는 12시 약간 위쪽에 배치
+        const cx = stroke.cx;
+        const cy = stroke.cy;
+        const r = stroke.r;
+        const dists = [radius + 2.5, radius + 4.5, radius + 1.0];
+        dists.forEach(d => {
+          candidates.push([cx - r * 0.35, cy - r - d * 0.7]);
+          candidates.push([cx, cy - r - d]);
+          candidates.push([cx - r - d, cy]);
+          candidates.push([cx + r * 0.35, cy - r - d * 0.7]);
+        });
+      } else {
+        const [sx, sy] = points[0];
+        const [nx, ny] = points[1] || [sx + 1, sy];
+        const len = Math.hypot(nx - sx, ny - sy) || 1;
+        const ux = (nx - sx) / len;
+        const uy = (ny - sy) / len;
+
+        // 진행 방향의 뒤쪽, 수직 양옆, 45도 대각선 등 다양한 방향과 거리 시도
+        const distMultipliers = [1.0, 1.4, 0.7];
+        distMultipliers.forEach(m => {
+          const d = (radius + 2.8) * m;
+          candidates.push(
+            [sx - ux * d, sy - uy * d],                 // 시작점 뒤쪽
+            [sx - uy * d, sy + ux * d],                 // 수직 오른쪽
+            [sx + uy * d, sy - ux * d],                 // 수직 왼쪽
+            [sx - ux * d - uy * d * 0.8, sy - uy * d + ux * d * 0.8], // 대각선 1
+            [sx - ux * d + uy * d * 0.8, sy - uy * d - ux * d * 0.8], // 대각선 2
+            [sx + ux * d * 0.8, sy + uy * d * 0.8]      // 획 안쪽 살짝
+          );
+        });
+      }
+
+      // 1순위: 화면 안쪽에 있고 기존 번호들과 minGap 이상 떨어진 위치
+      for (const c of candidates) {
+        if (inside(c) && getDist(c) >= minGap) return c;
+      }
+
+      // 2순위: clamp된 위치 중 minGap 이상 떨어진 위치
+      for (const c of candidates) {
+        const cc = clamp(c);
+        if (getDist(cc) >= minGap) return cc;
+      }
+
+      // 3순위: 그래도 겹치면 기존 번호들과 거리가 가장 먼 안전한 위치 선택
+      let bestPos = clamp(candidates[0]);
+      let maxDist = -1;
+      for (const c of candidates) {
+        const cc = clamp(c);
+        const dist = getDist(cc);
+        if (dist > maxDist) {
+          maxDist = dist;
+          bestPos = cc;
+        }
+      }
+      return bestPos;
+    }
+
+    function buildStrokeSvg(strokes) {
+      const svg = svgEl("svg", { class: "stroke-svg", viewBox: "0 0 100 100", "aria-hidden": "true" });
+      const glyphLayer = svgEl("g", {});
+      const arrowLayer = svgEl("g", {});
+      const numberLayer = svgEl("g", {});
+      svg.append(glyphLayer, arrowLayer, numberLayer);
+
+      // 획수가 많을수록 번호 원 크기를 정밀하게 조절하여 겹침 방지
+      const radius = strokes.length >= 9 ? 3.8 : strokes.length >= 6 ? 4.4 : 5.0;
+      const headSize = Math.max(3.2, radius * 0.78);
+      const placed = [];
+
+      strokes.forEach((stroke, index) => {
+        // ① 연한 회색 글자 획
+        const fullPts = stroke.circle ? circlePoints(stroke, 1) : stroke.points;
+        glyphLayer.appendChild(svgEl("path", { class: "glyph-stroke", d: toPath(fullPts) }));
+
+        // ② 파란 화살표 (동그라미는 끝부분을 조금 남겨 화살촉이 보이게)
+        const arrowPts = stroke.circle ? circlePoints(stroke, 0.86) : stroke.points;
+        arrowLayer.appendChild(svgEl("path", { class: "arrow-line", d: toPath(shortenEnd(arrowPts, headSize * 0.6)) }));
+        arrowLayer.appendChild(svgEl("polygon", { class: "arrow-head", points: arrowHead(arrowPts, headSize) }));
+
+        // ③ 번호 동그라미 & 숫자
+        const pos = chooseNumberPosition(stroke, arrowPts, placed, radius);
+        placed.push(pos);
+        numberLayer.appendChild(svgEl("circle", { class: "num-circle", cx: pos[0].toFixed(2), cy: pos[1].toFixed(2), r: radius }));
+        const text = svgEl("text", {
+          class: "num-text",
+          x: pos[0].toFixed(2),
+          y: (pos[1] + 0.35).toFixed(2),
+          "font-size": (radius * 1.32).toFixed(2)
+        });
+        text.textContent = index + 1;
+        numberLayer.appendChild(text);
+      });
+
+      return svg;
+    }
+
+    /* =========================================================
+       5. 칸 만들기
+       ========================================================= */
+    const CELLS_PER_ROW = 10;
+
+    // 문장을 10칸씩 나누기 (줄 맨 앞에 오는 띄어쓰기는 생략 — 원고지 규칙)
+    function splitIntoRows(text) {
+      const rows = [];
+      let current = [];
+      [...text].forEach(char => {
+        if (char === " " && current.length === 0) return;
+        current.push(char);
+        if (current.length === CELLS_PER_ROW) {
+          rows.push(current);
+          current = [];
+        }
+      });
+      if (current.length) rows.push(current);
+      return rows;
+    }
+
+    function createSpaceCell() {
+      const cell = document.createElement("div");
+      cell.className = "space-cell";
+      cell.setAttribute("aria-label", "띄어쓰기");
+      return cell;
+    }
+
+    function createGlyph(char) {
+      const glyph = document.createElement("span");
+      glyph.className = "worksheet-glyph";
+      glyph.textContent = char;
+      return glyph;
+    }
+
+    function createStrokeCell(char) {
+      if (char === " ") return createSpaceCell();
+
+      const cell = document.createElement("div");
+      cell.className = "hangul-cell stroke-cell";
+
+      if (punctuationMarks.includes(char)) {
+        cell.classList.add("punctuation");
+        cell.appendChild(createGlyph(char));
+        cell.setAttribute("aria-label", `${char} 문장 부호`);
+        return cell;
+      }
+
+      const strokes = isHangul(char) ? syllableStrokes(char) : singleJamoStrokes(char);
+
+      if (!strokes) {
+        // 한글이 아닌 글자(숫자, 영어 등)는 글자만 연하게 보여 줌
+        cell.appendChild(createGlyph(char));
+        cell.setAttribute("aria-label", char);
+        return cell;
+      }
+
+      cell.appendChild(buildStrokeSvg(strokes));
+      cell.setAttribute("aria-label", `${char} 획순 안내 (${strokes.length}획)`);
+      return cell;
+    }
+
+    function createPracticeCell(char, trace) {
+      if (char === " ") return createSpaceCell();
+
+      const cell = document.createElement("div");
+      cell.className = `hangul-cell practice-cell${trace ? "" : " blank"}`;
+      if (punctuationMarks.includes(char)) cell.classList.add("punctuation");
+      cell.appendChild(createGlyph(char));
+      cell.setAttribute("aria-label", trace ? `${char} 따라 쓰기` : `${char} 혼자 쓰기 칸`);
+      return cell;
+    }
+
+    // 줄 끝의 남는 칸은 빈칸으로 채워 원고지 모양 유지
+    function fillRow(row, used) {
+      for (let i = used; i < CELLS_PER_ROW; i += 1) {
+        const empty = document.createElement("div");
+        empty.className = "hangul-cell practice-cell blank";
+        row.appendChild(empty);
+      }
+    }
+
+    function renderGrid(container, rows, makeCell, repeat) {
+      container.replaceChildren();
+      for (let r = 0; r < repeat; r += 1) {
+        rows.forEach(chars => {
+          const row = document.createElement("div");
+          row.className = "writing-row";
+          chars.forEach(char => row.appendChild(makeCell(char)));
+          fillRow(row, chars.length); // 항상 한 줄 10칸으로 맞춤
+          container.appendChild(row);
+        });
+      }
+    }
+
+    /* =========================================================
+       6. 학습지 만들기
+       ========================================================= */
+    const input = document.getElementById("sentence-input");
+    const form = document.getElementById("sentence-form");
+    const statusMessage = document.getElementById("status-message");
+
+    function showStatus(message, isError) {
+      statusMessage.textContent = message;
+      statusMessage.style.color = isError ? "#bd493f" : "#247060";
+    }
+
+    function generateWorksheet(text) {
+      const normalized = text.trim().replace(/\s+/g, " ");
+
+      if (!normalized) {
+        showStatus("연습할 단어 또는 문장을 입력해 주세요.", true);
+        input.focus();
+        return;
+      }
+      if (!/[가-힣]/.test(normalized)) {
+        showStatus("한글이 들어 있는 단어 또는 문장을 입력해 주세요.", true);
+        input.focus();
+        return;
+      }
+
+      input.value = normalized;
+      showStatus("연한 글자, 동그라미 번호, 파란 화살표를 보고 천천히 따라 써 보세요.", false);
+
+      // 지금 문장과 같은 예시 버튼은 분홍색으로 표시
+      document.querySelectorAll("[data-example]").forEach(button => {
+        button.classList.toggle("active", button.dataset.example === normalized);
+      });
+
+      const rows = splitIntoRows(normalized);
+
+      renderGrid(document.getElementById("stroke-grid"), rows, createStrokeCell, 1);
+      renderGrid(document.getElementById("trace-grid"), rows, char => createPracticeCell(char, true), 2);
+      renderGrid(document.getElementById("self-grid"), rows, char => createPracticeCell(char, false), 2);
+
+      const linePractice = document.getElementById("line-practice");
+      linePractice.replaceChildren();
+      for (let line = 1; line <= 3; line += 1) {
+        const row = document.createElement("div");
+        row.className = "line-practice";
+        const number = document.createElement("span");
+        number.className = "line-number";
+        number.textContent = line;
+        const practiceLine = document.createElement("div");
+        practiceLine.className = "practice-line";
+        row.append(number, practiceLine);
+        linePractice.appendChild(row);
+      }
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      generateWorksheet(input.value);
+    });
+
+    document.querySelectorAll("[data-example]").forEach(button => {
+      button.addEventListener("click", () => {
+        input.value = button.dataset.example;
+        generateWorksheet(input.value);
+      });
+    });
+
+    document.getElementById("print-button").addEventListener("click", () => window.print());
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) lucide.createIcons();
+      generateWorksheet("바른 글씨를 써요.");
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>초등 2학년 한글 획순 학습지 모음집</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "SchoolSafeDotum";
+      src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareondotumR.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "SchoolSafeDotum";
+      src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareondotumB.woff2") format("woff2");
+      font-weight: 700;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "SchoolSafeBatang";
+      src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareonbatangR.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "SchoolSafeBatang";
+      src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareonbatangB.woff2") format("woff2");
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    :root {
+      --ink: #24354b;
+      --paper: #fffdf7;
+      --navy: #25476a;
+      --coral: #f17162;
+      --mint: #d9eee8;
+      --guide: #bdd0d8;
+      --guide-dark: #91abb9;
+      --pale-glyph: #d9dfe1;
+      --arrow: #4387c5;
+      --cell-size: 64px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      width: 100%;
+      margin: 0;
+      color: var(--ink);
+      font-family: "SchoolSafeDotum", "Malgun Gothic", sans-serif;
+      background-color: #edf5f4;
+      background-image: radial-gradient(#d0e5e0 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .top-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 2px solid #cbdde1;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .worksheet-page {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 28px auto;
+      padding: 32px 40px;
+      background: var(--paper);
+      box-shadow: 0 12px 40px rgba(39, 70, 94, .12);
+      border-radius: 16px;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .pencil-mark {
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      border-radius: 2px;
+      background: var(--coral);
+      transform: rotate(45deg);
+    }
+
+    .eyebrow { color: var(--coral); font-size: .8rem; }
+    .page-title { color: var(--ink); font-size: 1.8rem; font-weight: 700; }
+    .page-subtitle { color: #5a6b7c; font-size: 0.88rem; }
+
+    .name-field { background: #f3f6f5; }
+    .name-field .label { color: #5a6b7c; font-size: .88rem; }
+
+    .lesson-card {
+      border: 1.5px solid #d9e4e8;
+      border-radius: 14px;
+      background: rgba(255,255,255,.9);
+      padding: 12px 16px;
+    }
+    .lesson-card h2 { color: var(--ink); font-size: 1.1rem; }
+    .lesson-card .help { color: #5a6b7c; font-size: .82rem; }
+
+    .step-label {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--navy);
+      font-size: .8rem;
+      font-weight: 700;
+    }
+
+    /* 원고지 칸 */
+    .writing-grid {
+      display: inline-block;
+      border: 1.5px solid var(--guide-dark);
+      background: #fff;
+    }
+
+    .writing-row {
+      display: flex;
+    }
+
+    .hangul-cell, .space-cell {
+      position: relative;
+      width: var(--cell-size);
+      height: var(--cell-size);
+      flex: 0 0 var(--cell-size);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-right: 1px solid var(--guide);
+      border-bottom: 1px solid var(--guide);
+      background-color: rgba(255,255,255,.9);
+    }
+
+    .hangul-cell:last-child, .space-cell:last-child { border-right: 0; }
+    .writing-row:last-child .hangul-cell, .writing-row:last-child .space-cell { border-bottom: 0; }
+
+    .hangul-cell::before, .hangul-cell::after,
+    .space-cell::before, .space-cell::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .hangul-cell::before, .space-cell::before {
+      left: 0; top: 50%; width: 100%;
+      border-top: 1px dashed var(--guide);
+    }
+    .hangul-cell::after, .space-cell::after {
+      left: 50%; top: 0; height: 100%;
+      border-left: 1px dashed var(--guide);
+    }
+
+    .worksheet-glyph {
+      position: relative;
+      z-index: 1;
+      color: var(--pale-glyph);
+      font-family: "SchoolSafeBatang", "Batang", serif;
+      font-size: calc(var(--cell-size) * .72);
+      font-weight: 400;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .practice-cell.blank .worksheet-glyph { color: transparent; }
+
+    .punctuation {
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 0 0 6px 8px;
+    }
+    .punctuation .worksheet-glyph { color: #aebcc2; font-size: calc(var(--cell-size) * .45); }
+    .practice-cell.blank.punctuation .worksheet-glyph { color: transparent; }
+
+    /* SVG 획순 */
+    .stroke-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .stroke-svg .glyph-stroke {
+      fill: none;
+      stroke: #d0d9df;
+      stroke-width: 5.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .stroke-svg .arrow-line {
+      fill: none;
+      stroke: var(--arrow);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .stroke-svg .arrow-head { fill: var(--arrow); }
+    .stroke-svg .num-circle {
+      fill: #ffffff;
+      stroke: #3f7fae;
+      stroke-width: 1.2;
+    }
+    .stroke-svg .num-text {
+      fill: #1d4e73;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    /* 빈 줄 쓰기 */
+    .line-practice {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      padding-top: 6px;
+    }
+    .line-number {
+      width: 32px;
+      padding-bottom: 4px;
+      color: #718090;
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+    }
+    .practice-line {
+      height: 48px;
+      flex: 1;
+      border: 1.5px solid var(--guide-dark);
+      background-color: rgba(255,255,255,.5);
+      background-image: linear-gradient(to bottom, transparent 23px, #c9d9df 24px, transparent 25px);
+    }
+
+    /* A4 1장 인쇄 설정 */
+    @page { size: A4 portrait; margin: 10mm 12mm; }
+
+    @media print {
+      body { background: #fff; }
+      .no-print { display: none !important; }
+      .worksheet-page {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+      .worksheet-page:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+      .lesson-card {
+        padding: 10px 14px !important;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 툴바 (인쇄 시 숨김) -->
+  <header class="top-toolbar no-print px-4 py-3 sm:px-8">
+    <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-lg font-bold text-[#25476a]">📚 초등 2학년 한글 획순 학습지 모음집</h1>
+        <p class="text-xs text-[#5a6b7c]">교과서 핵심 낱말 8종 세트 (A4 인쇄 시 1장씩 깔끔하게 분할 출력됩니다)</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="inline-flex items-center gap-1.5 rounded-xl border border-[#b9cbd3] bg-white px-3.5 py-2 text-sm font-bold text-[#25476a] transition hover:bg-gray-50">
+          <i data-lucide="arrow-left" class="h-4 w-4"></i>
+          <span>직접 문장 만들기</span>
+        </a>
+        <button onclick="window.print()" class="inline-flex items-center gap-1.5 rounded-xl bg-[#25476a] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110">
+          <i data-lucide="printer" class="h-4 w-4"></i>
+          <span>모음집 전체 인쇄하기</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 단어별 학습지 컨테이너 -->
+  <div id="pages-container"></div>
+
+  <script>
+    const WORDS = [
+      { text: "나무", tag: "기초", desc: "자음 ㄴ, ㅁ과 모음 ㅏ, ㅜ 기본 쓰기" },
+      { text: "학교", tag: "쌍자음", desc: "쌍자음 ㄲ과 복합 모음 ㅛ 바르게 쓰기" },
+      { text: "봄바람", tag: "받침", desc: "받침 ㅁ과 ㄹ의 위치와 크기 생각하기" },
+      { text: "가을 하늘", tag: "받침·띄어쓰기", desc: "받침 ㅇ, ㄴ과 띄어쓰기 한 칸 띄우기" },
+      { text: "친구와 함께", tag: "2학년 어휘", desc: "사이좋게 어울리는 예쁜 말 쓰기" },
+      { text: "책을 읽어요", tag: "겹받침", desc: "겹받침 ㄺ의 바른 획순 익히기" },
+      { text: "밝은 달이 떴어요", tag: "심화", desc: "겹받침 ㄺ, 쌍자음 ㄸ과 ㅆ 쓰기" },
+      { text: "꽃이 활짝 피었어요", tag: "종합", desc: "받침 ㅊ, 쌍자음 ㅉ과 ㅆ 종합 연습" }
+    ];
+
+    /* 분해 및 획순 로직 */
+    const choseong = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+    const jungseong = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"];
+    const jongseong = ["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+
+    const verticalVowels = new Set(["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅣ"]);
+    const mixedVowels = {
+      "ㅘ": ["ㅗ","ㅏ"], "ㅙ": ["ㅗ","ㅐ"], "ㅚ": ["ㅗ","ㅣ"],
+      "ㅝ": ["ㅜ","ㅓ"], "ㅞ": ["ㅜ","ㅔ"], "ㅟ": ["ㅜ","ㅣ"], "ㅢ": ["ㅡ","ㅣ"]
+    };
+    const punctuationMarks = [".", "。", ",", "、", "!", "！", "?", "？"];
+
+    function isHangul(char) {
+      const code = char.charCodeAt(0);
+      return code >= 0xAC00 && code <= 0xD7A3;
+    }
+
+    function decompose(char) {
+      const offset = char.charCodeAt(0) - 0xAC00;
+      return {
+        initial: choseong[Math.floor(offset / 588)],
+        vowel: jungseong[Math.floor((offset % 588) / 28)],
+        final: jongseong[offset % 28]
+      };
+    }
+
+    const STROKES = {
+      "ㄱ": [ [[18,20],[82,20],[82,86]] ],
+      "ㄴ": [ [[20,16],[20,84],[86,84]] ],
+      "ㄷ": [ [[20,18],[82,18]], [[20,26],[20,84],[86,84]] ],
+      "ㄹ": [ [[16,14],[82,14],[82,46]], [[18,50],[80,50]], [[18,56],[18,86],[86,86]] ],
+      "ㅁ": [ [[20,16],[20,84]], [[26,16],[82,16],[82,84]], [[20,84],[82,84]] ],
+      "ㅂ": [ [[22,12],[22,86]], [[78,12],[78,86]], [[22,48],[78,48]], [[22,86],[78,86]] ],
+      "ㅅ": [ [[50,12],[16,86]], [[46,46],[84,86]] ],
+      "ㅇ": [ { circle: [50,50,35] } ],
+      "ㅈ": [ [[18,18],[82,18],[22,86]], [[48,50],[84,86]] ],
+      "ㅊ": [ [[50,4],[50,18]], [[18,28],[82,28],[22,90]], [[48,58],[84,90]] ],
+      "ㅋ": [ [[18,16],[82,16],[82,86]], [[20,50],[80,50]] ],
+      "ㅌ": [ [[20,14],[82,14]], [[20,49],[78,49]], [[20,22],[20,86],[84,86]] ],
+      "ㅍ": [ [[14,14],[86,14]], [[34,16],[34,84]], [[66,16],[66,84]], [[14,86],[86,86]] ],
+      "ㅎ": [ [[50,4],[50,18]], [[16,28],[84,28]], { circle: [50,64,24] } ],
+
+      "ㅏ": [ [[40,4],[40,96]], [[40,48],[86,48]] ],
+      "ㅑ": [ [[40,4],[40,96]], [[40,35],[86,35]], [[40,62],[86,62]] ],
+      "ㅓ": [ [[14,48],[60,48]], [[60,4],[60,96]] ],
+      "ㅕ": [ [[14,35],[60,35]], [[14,62],[60,62]], [[60,4],[60,96]] ],
+      "ㅣ": [ [[50,4],[50,96]] ],
+      "ㅐ": [ [[24,6],[24,94]], [[24,48],[72,48]], [[74,4],[74,96]] ],
+      "ㅒ": [ [[24,6],[24,94]], [[24,35],[72,35]], [[24,62],[72,62]], [[74,4],[74,96]] ],
+      "ㅔ": [ [[6,48],[44,48]], [[44,6],[44,94]], [[80,4],[80,96]] ],
+      "ㅖ": [ [[6,35],[44,35]], [[6,62],[44,62]], [[44,6],[44,94]], [[80,4],[80,96]] ],
+
+      "ㅗ": [ [[50,10],[50,56]], [[6,62],[94,62]] ],
+      "ㅛ": [ [[34,10],[34,56]], [[66,10],[66,56]], [[6,62],[94,62]] ],
+      "ㅜ": [ [[6,34],[94,34]], [[50,40],[50,90]] ],
+      "ㅠ": [ [[6,34],[94,34]], [[34,40],[34,90]], [[66,40],[66,90]] ],
+      "ㅡ": [ [[6,50],[94,50]] ]
+    };
+
+    const COMPOUND = {
+      "ㄲ": ["ㄱ","ㄱ"], "ㄸ": ["ㄷ","ㄷ"], "ㅃ": ["ㅂ","ㅂ"], "ㅆ": ["ㅅ","ㅅ"], "ㅉ": ["ㅈ","ㅈ"],
+      "ㄳ": ["ㄱ","ㅅ"], "ㄵ": ["ㄴ","ㅈ"], "ㄶ": ["ㄴ","ㅎ"], "ㄺ": ["ㄹ","ㄱ"], "ㄻ": ["ㄹ","ㅁ"],
+      "ㄼ": ["ㄹ","ㅂ"], "ㄽ": ["ㄹ","ㅅ"], "ㄾ": ["ㄹ","ㅌ"], "ㄿ": ["ㄹ","ㅍ"], "ㅀ": ["ㄹ","ㅎ"],
+      "ㅄ": ["ㅂ","ㅅ"]
+    };
+
+    const LAYOUTS = {
+      vertical:       { initial: [12,14,44,68], vowel: [58,8,30,84] },
+      verticalFinal:  { initial: [14,6,40,44],  vowel: [58,4,28,56], final: [18,60,64,36] },
+      horizontal:     { initial: [24,8,52,42],  vowel: [10,50,80,42] },
+      horizontalFinal:{ initial: [26,4,48,32],  vowel: [12,34,76,26], final: [18,60,64,36] },
+      mixed:          { initial: [10,8,44,40],  vowelH: [4,48,62,42], vowelV: [66,4,26,92] },
+      mixedFinal:     { initial: [12,4,40,30],  vowelH: [6,34,58,27], vowelV: [66,2,24,60], final: [18,61,64,35] }
+    };
+
+    function jamoStrokes(jamo, box) {
+      if (COMPOUND[jamo]) {
+        const [left, right] = COMPOUND[jamo];
+        const [x, y, w, h] = box;
+        const gap = w * 0.04;
+        const half = (w - gap) * 0.49;
+        return [
+          ...jamoStrokes(left,  [x, y, half, h]),
+          ...jamoStrokes(right, [x + w - half, y, half, h])
+        ];
+      }
+      const data = STROKES[jamo];
+      if (!data) return [];
+      const [bx, by, bw, bh] = box;
+      const map = ([px, py]) => [bx + px / 100 * bw, by + py / 100 * bh];
+      return data.map(stroke => {
+        if (stroke.circle) {
+          const [cx, cy, r] = stroke.circle;
+          const [mx, my] = map([cx, cy]);
+          return { circle: true, cx: mx, cy: my, r: r / 100 * Math.min(bw, bh) };
+        }
+        return { points: stroke.map(map) };
+      });
+    }
+
+    function syllableStrokes(char) {
+      const parts = decompose(char);
+      const hasFinal = Boolean(parts.final);
+      let strokes = [];
+      if (mixedVowels[parts.vowel]) {
+        const layout = hasFinal ? LAYOUTS.mixedFinal : LAYOUTS.mixed;
+        const [hPart, vPart] = mixedVowels[parts.vowel];
+        strokes = [
+          ...jamoStrokes(parts.initial, layout.initial),
+          ...jamoStrokes(hPart, layout.vowelH),
+          ...jamoStrokes(vPart, layout.vowelV)
+        ];
+        if (hasFinal) strokes.push(...jamoStrokes(parts.final, layout.final));
+      } else {
+        const isVertical = verticalVowels.has(parts.vowel);
+        const key = (isVertical ? "vertical" : "horizontal") + (hasFinal ? "Final" : "");
+        const layout = LAYOUTS[key];
+        strokes = [
+          ...jamoStrokes(parts.initial, layout.initial),
+          ...jamoStrokes(parts.vowel, layout.vowel)
+        ];
+        if (hasFinal) strokes.push(...jamoStrokes(parts.final, layout.final));
+      }
+      return strokes;
+    }
+
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    function svgEl(tag, attrs) {
+      const el = document.createElementNS(SVG_NS, tag);
+      Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+      return el;
+    }
+
+    function circlePoints(s, portion) {
+      const pts = [];
+      const steps = 36;
+      for (let i = 0; i <= steps; i += 1) {
+        const t = (i / steps) * Math.PI * 2 * portion;
+        pts.push([s.cx - s.r * Math.sin(t), s.cy - s.r * Math.cos(t)]);
+      }
+      return pts;
+    }
+
+    function toPath(points) {
+      return points.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" ");
+    }
+
+    function shortenEnd(points, amount) {
+      const pts = points.map(p => [...p]);
+      const a = pts[pts.length - 2];
+      const b = pts[pts.length - 1];
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (len > amount + 1) {
+        b[0] -= (b[0] - a[0]) / len * amount;
+        b[1] -= (b[1] - a[1]) / len * amount;
+      }
+      return pts;
+    }
+
+    function arrowHead(points, size) {
+      const a = points[points.length - 2];
+      const b = points[points.length - 1];
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+      const ux = (b[0] - a[0]) / len;
+      const uy = (b[1] - a[1]) / len;
+      const baseX = b[0] - ux * size;
+      const baseY = b[1] - uy * size;
+      const half = size * 0.55;
+      return `${b[0].toFixed(2)},${b[1].toFixed(2)} ${(baseX - uy * half).toFixed(2)},${(baseY + ux * half).toFixed(2)} ${(baseX + uy * half).toFixed(2)},${(baseY - ux * half).toFixed(2)}`;
+    }
+
+    function chooseNumberPosition(stroke, points, placed, radius) {
+      const minGap = radius * 2 + 1.2;
+      const margin = radius + 1.5;
+      const inside = ([x, y]) => x >= margin && x <= 100 - margin && y >= margin && y <= 100 - margin;
+      const clamp = ([x, y]) => [
+        Math.min(100 - margin, Math.max(margin, x)),
+        Math.min(100 - margin, Math.max(margin, y))
+      ];
+      const getDist = p => {
+        if (!placed.length) return 999;
+        return Math.min(...placed.map(q => Math.hypot(p[0] - q[0], p[1] - q[1])));
+      };
+
+      const candidates = [];
+      if (stroke.circle) {
+        const cx = stroke.cx, cy = stroke.cy, r = stroke.r;
+        const dists = [radius + 2.5, radius + 4.5, radius + 1.0];
+        dists.forEach(d => {
+          candidates.push([cx - r * 0.35, cy - r - d * 0.7]);
+          candidates.push([cx, cy - r - d]);
+          candidates.push([cx - r - d, cy]);
+        });
+      } else {
+        const [sx, sy] = points[0];
+        const [nx, ny] = points[1] || [sx + 1, sy];
+        const len = Math.hypot(nx - sx, ny - sy) || 1;
+        const ux = (nx - sx) / len;
+        const uy = (ny - sy) / len;
+        const distMultipliers = [1.0, 1.4, 0.7];
+        distMultipliers.forEach(m => {
+          const d = (radius + 2.8) * m;
+          candidates.push(
+            [sx - ux * d, sy - uy * d],
+            [sx - uy * d, sy + ux * d],
+            [sx + uy * d, sy - ux * d],
+            [sx - ux * d - uy * d * 0.8, sy - uy * d + ux * d * 0.8]
+          );
+        });
+      }
+
+      for (const c of candidates) {
+        if (inside(c) && getDist(c) >= minGap) return c;
+      }
+      for (const c of candidates) {
+        const cc = clamp(c);
+        if (getDist(cc) >= minGap) return cc;
+      }
+      return clamp(candidates[0]);
+    }
+
+    function buildStrokeSvg(strokes) {
+      const svg = svgEl("svg", { class: "stroke-svg", viewBox: "0 0 100 100" });
+      const glyphLayer = svgEl("g", {});
+      const arrowLayer = svgEl("g", {});
+      const numberLayer = svgEl("g", {});
+      svg.append(glyphLayer, arrowLayer, numberLayer);
+
+      const radius = strokes.length >= 9 ? 3.8 : strokes.length >= 6 ? 4.4 : 5.0;
+      const headSize = Math.max(3.2, radius * 0.78);
+      const placed = [];
+
+      strokes.forEach((stroke, index) => {
+        const fullPts = stroke.circle ? circlePoints(stroke, 1) : stroke.points;
+        glyphLayer.appendChild(svgEl("path", { class: "glyph-stroke", d: toPath(fullPts) }));
+
+        const arrowPts = stroke.circle ? circlePoints(stroke, 0.86) : stroke.points;
+        arrowLayer.appendChild(svgEl("path", { class: "arrow-line", d: toPath(shortenEnd(arrowPts, headSize * 0.6)) }));
+        arrowLayer.appendChild(svgEl("polygon", { class: "arrow-head", points: arrowHead(arrowPts, headSize) }));
+
+        const pos = chooseNumberPosition(stroke, arrowPts, placed, radius);
+        placed.push(pos);
+        numberLayer.appendChild(svgEl("circle", { class: "num-circle", cx: pos[0].toFixed(2), cy: pos[1].toFixed(2), r: radius }));
+        const text = svgEl("text", {
+          class: "num-text",
+          x: pos[0].toFixed(2),
+          y: (pos[1] + 0.35).toFixed(2),
+          "font-size": (radius * 1.32).toFixed(2)
+        });
+        text.textContent = index + 1;
+        numberLayer.appendChild(text);
+      });
+      return svg;
+    }
+
+    const CELLS_PER_ROW = 10;
+    function splitIntoRows(text) {
+      const rows = [];
+      let current = [];
+      [...text].forEach(char => {
+        if (char === " " && current.length === 0) return;
+        current.push(char);
+        if (current.length === CELLS_PER_ROW) {
+          rows.push(current);
+          current = [];
+        }
+      });
+      if (current.length) rows.push(current);
+      return rows;
+    }
+
+    function createSpaceCell() {
+      const cell = document.createElement("div");
+      cell.className = "space-cell";
+      return cell;
+    }
+    function createGlyph(char) {
+      const glyph = document.createElement("span");
+      glyph.className = "worksheet-glyph";
+      glyph.textContent = char;
+      return glyph;
+    }
+    function createStrokeCell(char) {
+      if (char === " ") return createSpaceCell();
+      const cell = document.createElement("div");
+      cell.className = "hangul-cell stroke-cell";
+      if (punctuationMarks.includes(char)) {
+        cell.classList.add("punctuation");
+        cell.appendChild(createGlyph(char));
+        return cell;
+      }
+      const strokes = isHangul(char) ? syllableStrokes(char) : null;
+      if (!strokes) {
+        cell.appendChild(createGlyph(char));
+      } else {
+        cell.appendChild(buildStrokeSvg(strokes));
+      }
+      return cell;
+    }
+    function createPracticeCell(char, trace) {
+      if (char === " ") return createSpaceCell();
+      const cell = document.createElement("div");
+      cell.className = `hangul-cell practice-cell${trace ? "" : " blank"}`;
+      if (punctuationMarks.includes(char)) cell.classList.add("punctuation");
+      cell.appendChild(createGlyph(char));
+      return cell;
+    }
+
+    function fillRow(row, used) {
+      for (let i = used; i < CELLS_PER_ROW; i += 1) {
+        const empty = document.createElement("div");
+        empty.className = "hangul-cell practice-cell blank";
+        row.appendChild(empty);
+      }
+    }
+
+    function renderGrid(container, rows, makeCell, repeat) {
+      container.replaceChildren();
+      for (let r = 0; r < repeat; r += 1) {
+        rows.forEach(chars => {
+          const row = document.createElement("div");
+          row.className = "writing-row";
+          chars.forEach(char => row.appendChild(makeCell(char)));
+          fillRow(row, chars.length);
+          container.appendChild(row);
+        });
+      }
+    }
+
+    // 페이지 렌더링
+    function renderWorksheetPage(item, pageIndex) {
+      const page = document.createElement("div");
+      page.className = "worksheet-page";
+
+      page.innerHTML = `
+        <header class="border-b-2 border-dashed border-[#cbdde1] pb-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="pencil-mark"></span>
+              <p class="eyebrow m-0 font-bold">[국어] 한글 획순 쓰기 연습 (${item.tag})</p>
+            </div>
+            <span class="text-xs font-bold text-[#5a6b7c]">제 ${pageIndex + 1} 쪽</span>
+          </div>
+          <div class="mt-2 flex items-end justify-between">
+            <div>
+              <h1 class="page-title m-0">한글 바르게 쓰기</h1>
+              <p class="page-subtitle mt-1 mb-0">${item.desc}</p>
+            </div>
+            <div class="name-field flex shrink-0 items-end gap-2 rounded-full px-4 py-1.5">
+              <span class="label">이름</span>
+              <span class="inline-block w-20 border-b border-[#7893a2]"></span>
+            </div>
+          </div>
+        </header>
+
+        <main class="mt-5 space-y-4">
+          <section class="lesson-card">
+            <div class="flex items-start gap-2.5">
+              <span class="step-label">1</span>
+              <div>
+                <h2 class="m-0 font-bold">한글 획순 알아보기</h2>
+                <p class="help mt-0.5 mb-3">연한 회색 글자 위의 동그라미 번호와 파란 화살표를 보고 순서대로 써 보아요.</p>
+              </div>
+            </div>
+            <div class="stroke-grid writing-grid"></div>
+          </section>
+
+          <section class="lesson-card">
+            <div class="flex items-start gap-2.5">
+              <span class="step-label">2</span>
+              <div>
+                <h2 class="m-0 font-bold">따라 쓰기</h2>
+                <p class="help mt-0.5 mb-3">연한 글자 위에 획순을 생각하며 따라 써 보아요.</p>
+              </div>
+            </div>
+            <div class="trace-grid writing-grid"></div>
+          </section>
+
+          <section class="lesson-card">
+            <div class="flex items-start gap-2.5">
+              <span class="step-label">3</span>
+              <div>
+                <h2 class="m-0 font-bold">스스로 쓰기</h2>
+                <p class="help mt-0.5 mb-3">십자 점선에 맞춰 글자의 크기와 자리를 생각하며 써 보아요.</p>
+              </div>
+            </div>
+            <div class="self-grid writing-grid"></div>
+          </section>
+
+          <section class="lesson-card">
+            <div class="flex items-start gap-2.5">
+              <span class="step-label">4</span>
+              <div class="w-full">
+                <h2 class="m-0 font-bold">공책에 스스로 쓰기</h2>
+                <p class="help mt-0.5 mb-1.5">띄어쓰기와 문장 부호를 확인하며 다시 써 보아요.</p>
+                <div class="line-practice-box"></div>
+              </div>
+            </div>
+          </section>
+        </main>
+      `;
+
+      const rows = splitIntoRows(item.text);
+      renderGrid(page.querySelector(".stroke-grid"), rows, createStrokeCell, 1);
+      renderGrid(page.querySelector(".trace-grid"), rows, char => createPracticeCell(char, true), 2);
+      renderGrid(page.querySelector(".self-grid"), rows, char => createPracticeCell(char, false), 2);
+
+      const lineBox = page.querySelector(".line-practice-box");
+      for (let i = 1; i <= 3; i += 1) {
+        const lineRow = document.createElement("div");
+        lineRow.className = "line-practice";
+        lineRow.innerHTML = `
+          <span class="line-number">${i}</span>
+          <div class="practice-line"></div>
+        `;
+        lineBox.appendChild(lineRow);
+      }
+
+      return page;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) lucide.createIcons();
+      const container = document.getElementById("pages-container");
+      WORDS.forEach((item, index) => {
+        container.appendChild(renderWorksheetPage(item, index));
+      });
+    });
+  </script>
+</body>
+</html>
